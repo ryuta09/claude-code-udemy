@@ -49,3 +49,12 @@ Supabaseの使用方法は`.claude/supabase_document.md`を参照すること。
 - 開発環境と本番環境で別プロジェクトを作成
 - マイグレーションファイルでスキーマ管理
 - TypeScript型定義は`npx supabase gen types typescript`で生成
+
+## Authentication & Billing (Clerk)
+
+認証、サブスクリプション、課金機能の実装は`.claude/clerk_document.md`を参照すること。
+
+- **Clerk**で認証（サインアップ/サインイン）を実装
+- **Clerk Billing**（Stripeベース）で課金・サブスクリプション管理
+- プラン別アクセス制御には`has()`関数または`Protect`コンポーネントを使用
+- ClerkコンポーネントはSSR無効化で動的インポート推奨
