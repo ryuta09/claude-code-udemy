@@ -32,6 +32,15 @@ app/
 - Server Componentsがデフォルト（Client Componentsには`"use client"`が必要）
 - ESLintはNext.js推奨設定（core-web-vitals + typescript）を使用
 
+## Tailwind CSS v4
+
+Tailwind CSSのセットアップ・設定方法は`.claude/tailwind_document.md`を参照すること。
+
+- **ゼロコンフィグ**: `tailwind.config.js/ts`は不要（v4の特徴）
+- `@import "tailwindcss"`でインポート（v3の`@tailwind`は使用しない）
+- カスタマイズは`@theme inline`ディレクティブで行う
+- Shadcn UIとの統合時も設定ファイルは作成しない
+
 ## Design System
 
 UIコンポーネントやスタイリングを行う際は、`.claude/design_system.md`のデザインシステムに従うこと。
