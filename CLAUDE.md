@@ -31,3 +31,12 @@ app/
 - App Routerのファイルベースルーティング（`app/`ディレクトリ）
 - Server Componentsがデフォルト（Client Componentsには`"use client"`が必要）
 - ESLintはNext.js推奨設定（core-web-vitals + typescript）を使用
+
+## Design System
+
+UIコンポーネントやスタイリングを行う際は、`.claude/design_system.md`のデザインシステムに従うこと。
+
+- 配色はTailwind CSSユーティリティクラスのみを使用
+- WCAG 2.1準拠のコントラスト比を確保
+- 最小タッチターゲットサイズ44px x 44pxを確保
+- 8pxベースの余白システムを使用
