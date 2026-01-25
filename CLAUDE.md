@@ -58,3 +58,12 @@ Supabaseの使用方法は`.claude/supabase_document.md`を参照すること。
 - **Clerk Billing**（Stripeベース）で課金・サブスクリプション管理
 - プラン別アクセス制御には`has()`関数または`Protect`コンポーネントを使用
 - ClerkコンポーネントはSSR無効化で動的インポート推奨
+
+## Clerk + Supabase Integration
+
+ClerkとSupabaseのRLS連携については`.claude/clerk_supabase_integration_document.md`を参照すること。
+
+- **カスタムヘッダー方式（API Routes経由）を推奨**（環境非依存）
+- ClerkのユーザーIDはTEXT型で保存（UUIDではない）
+- `get_clerk_user_id()`関数でRLSポリシーを実装
+- すべてのデータアクセスはサーバーサイド経由で行う
