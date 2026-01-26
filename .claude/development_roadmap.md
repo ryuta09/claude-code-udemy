@@ -9,9 +9,9 @@
 - [x] Tailwind CSS v4設定済み
 - [x] ClerkとSupabaseの環境変数設定済み（.env.local）
 - [x] 要件定義書（.claude/requirements.md）確認済み
- 
+
 ## フェーズ1: 基盤構築
- 
+
 ### 1.1 プロジェクト基本設定
 - [x] Tailwind CSSのデザインシステム適用
   - [x] グローバルCSSの設定（globals.css）
@@ -20,14 +20,13 @@
 - [x] TypeScriptの型定義ファイル作成
  
 ### 1.2 データベース設計とセットアップ
-- [ ] Supabaseプロジェクトの初期化
-- [ ] データベーススキーマの作成
-  - [ ] usersテーブル（Clerkとの連携用）
-  - [ ] categoriesテーブル（カテゴリ管理）
-  - [ ] time_entriesテーブル（作業時間記録）
-- [ ] マイグレーションファイルの作成
-- [ ] Row Level Security (RLS)ポリシーの設定
-- [ ] ClerkとSupabaseの連携設定（カスタムヘッダー方式）
+- [x] Supabaseプロジェクトの初期化
+- [x] データベーススキーマの作成
+  - [x] categoriesテーブル（カテゴリ管理）
+  - [x] work_logsテーブル（作業時間記録）
+- [x] マイグレーションファイルの作成
+- [x] Row Level Security (RLS)ポリシーの設定
+- [x] ClerkとSupabaseの連携設定（カスタムヘッダー方式）
  
 ### 1.3 認証システムの実装
 - [ ] Clerk Providerの設定（app/providers.tsx）
