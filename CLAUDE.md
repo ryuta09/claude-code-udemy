@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Overview
+
+**Project Tracker** - シンプルな作業時間計測アプリ
+
+- タイマー機能、カテゴリ分け、ダッシュボード表示
+- 無料版（基本機能）とプレミアム版（高度な分析機能）の2プラン構成
+- 詳細な要件は`.claude/requirements.md`を参照
+- 開発ロードマップは`.claude/development_roadmap.md`を参照
+
 ## Commands
 
 ```bash
@@ -15,16 +24,19 @@ npm run lint     # ESLint実行
 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** でスタイリング（`@import "tailwindcss"` 構文）
+- **Supabase** (PostgreSQL) でデータ管理
+- **Clerk** で認証、**Clerk Billing** (Stripe) で課金
 - パスエイリアス: `@/*` → プロジェクトルート
 
-## Project Structure
+## Data Model
 
 ```
-app/
-├── layout.tsx    # ルートレイアウト（Geistフォント設定含む）
-├── page.tsx      # ホームページ
-└── globals.css   # グローバルスタイル（Tailwind + CSS変数）
+categories: id, user_id (TEXT), name, sort_order, created_at, updated_at
+work_logs: id, user_id (TEXT), category_id, duration (秒), memo, started_at, created_at, updated_at
 ```
+
+- `user_id`はClerkのユーザーID（UUID形式ではなくTEXT型）
+- RLSポリシーで`get_clerk_user_id()`関数を使用
 
 ## Key Conventions
 
