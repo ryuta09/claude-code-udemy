@@ -218,3 +218,19 @@
     }
   }
 }
+
+/* =============================================
+   Clerk コンポーネントのスタイル調整
+   ============================================= */
+
+/* Clerkコンポーネントのz-index調整（モーダルが隠れる問題を解決） */
+.cl-userButtonPopoverCard,
+.cl-userButtonPopoverActionButton,
+.cl-profileSectionPrimaryButton,
+.cl-userProfile,
+.cl-userProfilePopoverCard,
+.cl-modal,
+.cl-modalBackdrop,
+.cl-modalContent {
+  z-index: 9999 !important;
+}

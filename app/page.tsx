@@ -1,213 +1,313 @@
+import Link from "next/link";
+import { Header } from "@/components/Header";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      <main className="container-main py-16">
-        {/* ヘッダーセクション */}
-        <section className="space-y-6 text-center mb-16">
-          <h1>Project Tracker</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            シンプルに作業時間を記録・分析できるアプリ。
-            タイマー機能、カテゴリ分け、ダッシュボード表示で、
-            誰でも簡単に継続できる作業時間計測アプリ。
-          </p>
+      <Header />
+
+      <main>
+        {/* ヒーローセクション */}
+        <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
+          <div className="container-main text-center">
+            <h1 className="text-5xl font-bold text-gray-900 mb-6">
+              作業時間を
+              <span className="text-blue-500">シンプル</span>
+              に記録
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+              タイマー機能、カテゴリ分け、ダッシュボード表示で、
+              誰でも簡単に継続できる作業時間計測アプリ。
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Link href="/sign-up">
+                <button className="btn-primary btn-lg">無料で始める</button>
+              </Link>
+              <Link href="#features">
+                <button className="btn-secondary btn-lg">機能を見る</button>
+              </Link>
+            </div>
+          </div>
         </section>
 
-        {/* スタイルプレビューセクション */}
-        <section className="space-y-12">
-          {/* ボタンプレビュー */}
-          <div className="card">
-            <h2 className="mb-6">ボタンスタイル</h2>
-            <div className="flex flex-wrap gap-4">
-              <button className="btn-primary">プライマリ</button>
-              <button className="btn-secondary">セカンダリ</button>
-              <button className="btn-danger">危険</button>
-              <button className="btn-primary" disabled>
-                無効化
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-4 mt-4">
-              <button className="btn-primary btn-sm">小さい</button>
-              <button className="btn-primary">標準</button>
-              <button className="btn-primary btn-lg">大きい</button>
-            </div>
-          </div>
-
-          {/* タイポグラフィプレビュー */}
-          <div className="card">
-            <h2 className="mb-6">タイポグラフィ</h2>
-            <div className="space-y-4">
-              <h1>見出し1 - text-4xl font-bold</h1>
-              <h2>見出し2 - text-3xl font-semibold</h2>
-              <h3>見出し3 - text-2xl font-semibold</h3>
-              <h4>見出し4 - text-xl font-semibold</h4>
-              <h5>見出し5 - text-lg font-semibold</h5>
-              <h6>見出し6 - text-base font-semibold</h6>
-              <p className="text-base text-gray-900">
-                本文テキスト - text-base (16px)
-              </p>
-              <p className="text-sm text-gray-700">
-                補助テキスト - text-sm (14px) text-gray-700
-              </p>
-              <p className="text-xs text-gray-600">
-                キャプション - text-xs (12px) text-gray-600
-              </p>
-            </div>
-          </div>
-
-          {/* カラーパレットプレビュー */}
-          <div className="card">
-            <h2 className="mb-6">カラーパレット</h2>
-            <div className="space-y-6">
-              {/* プライマリカラー */}
-              <div>
-                <h4 className="mb-3">プライマリ（ブルー）</h4>
-                <div className="flex flex-wrap gap-2">
-                  <div className="w-20 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-xs">
-                    50
-                  </div>
-                  <div className="w-20 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-xs">
-                    100
-                  </div>
-                  <div className="w-20 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-xs text-white">
-                    500
-                  </div>
-                  <div className="w-20 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-xs text-white">
-                    600
-                  </div>
-                  <div className="w-20 h-12 bg-blue-700 rounded-lg flex items-center justify-center text-xs text-white">
-                    700
-                  </div>
-                  <div className="w-20 h-12 bg-blue-800 rounded-lg flex items-center justify-center text-xs text-white">
-                    800
-                  </div>
+        {/* 機能セクション */}
+        <section id="features" className="py-20">
+          <div className="container-main">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+              シンプルで使いやすい機能
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* タイマー機能 */}
+              <div className="card text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-8 h-8 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  ワンタップタイマー
+                </h3>
+                <p className="text-gray-600">
+                  ボタンひとつで計測開始。
+                  シンプルな操作で作業時間を正確に記録できます。
+                </p>
               </div>
 
-              {/* グレースケール */}
-              <div>
-                <h4 className="mb-3">グレースケール</h4>
-                <div className="flex flex-wrap gap-2">
-                  <div className="w-20 h-12 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-xs">
-                    50
-                  </div>
-                  <div className="w-20 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-xs">
-                    200
-                  </div>
-                  <div className="w-20 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-xs">
-                    300
-                  </div>
-                  <div className="w-20 h-12 bg-gray-500 rounded-lg flex items-center justify-center text-xs text-white">
-                    500
-                  </div>
-                  <div className="w-20 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-xs text-white">
-                    700
-                  </div>
-                  <div className="w-20 h-12 bg-gray-900 rounded-lg flex items-center justify-center text-xs text-white">
-                    900
-                  </div>
+              {/* カテゴリ分け */}
+              <div className="card text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-8 h-8 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  カテゴリ分け
+                </h3>
+                <p className="text-gray-600">
+                  プロジェクトや作業種類ごとに分類。
+                  何にどれだけ時間を使ったか一目で分かります。
+                </p>
               </div>
 
-              {/* システムカラー */}
-              <div>
-                <h4 className="mb-3">システムカラー</h4>
-                <div className="flex flex-wrap gap-2">
-                  <div className="w-24 h-12 bg-green-600 rounded-lg flex items-center justify-center text-xs text-white">
-                    成功
-                  </div>
-                  <div className="w-24 h-12 bg-amber-600 rounded-lg flex items-center justify-center text-xs text-white">
-                    警告
-                  </div>
-                  <div className="w-24 h-12 bg-red-600 rounded-lg flex items-center justify-center text-xs text-white">
-                    エラー
-                  </div>
-                  <div className="w-24 h-12 bg-blue-700 rounded-lg flex items-center justify-center text-xs text-white">
-                    情報
-                  </div>
+              {/* ダッシュボード */}
+              <div className="card text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-8 h-8 text-purple-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* フォームプレビュー */}
-          <div className="card">
-            <h2 className="mb-6">フォーム要素</h2>
-            <div className="space-y-4 max-w-md">
-              <div>
-                <label className="label">カテゴリ名</label>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="例: 開発作業"
-                />
-              </div>
-              <div>
-                <label className="label">メモ</label>
-                <textarea
-                  className="input min-h-[100px] py-3"
-                  placeholder="作業内容を入力..."
-                />
-              </div>
-              <div>
-                <label className="label">エラー状態の入力</label>
-                <input
-                  type="text"
-                  className="input input-error"
-                  placeholder="エラーがあります"
-                />
-                <p className="text-sm text-red-600 mt-1">
-                  このフィールドは必須です
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  見やすいダッシュボード
+                </h3>
+                <p className="text-gray-600">
+                  日別・週別・月別で作業時間を可視化。
+                  継続のモチベーションを維持できます。
                 </p>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* バッジプレビュー */}
-          <div className="card">
-            <h2 className="mb-6">バッジ</h2>
-            <div className="flex flex-wrap gap-3">
-              <span className="badge border-blue-300 bg-blue-50 text-blue-700">
-                開発
-              </span>
-              <span className="badge border-green-300 bg-green-50 text-green-700">
-                完了
-              </span>
-              <span className="badge border-amber-300 bg-amber-50 text-amber-700">
-                進行中
-              </span>
-              <span className="badge border-gray-300 bg-gray-50 text-gray-700">
-                デフォルト
-              </span>
-            </div>
-          </div>
-
-          {/* カードプレビュー */}
-          <div className="space-y-4">
-            <h2>カードバリエーション</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="card card-sm">
-                <h4 className="mb-2">小さいカード</h4>
-                <p className="text-sm text-gray-600">p-4 の内余白</p>
-              </div>
-              <div className="card">
-                <h4 className="mb-2">標準カード</h4>
-                <p className="text-sm text-gray-600">p-5 の内余白</p>
-              </div>
+        {/* 料金セクション */}
+        <section id="pricing" className="py-20 bg-gray-50">
+          <div className="container-main">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
+              シンプルな料金プラン
+            </h2>
+            <p className="text-center text-gray-600 mb-12">
+              まずは無料で始めて、必要に応じてアップグレード
+            </p>
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* 無料プラン */}
               <div className="card card-lg">
-                <h4 className="mb-2">大きいカード</h4>
-                <p className="text-sm text-gray-600">p-6 の内余白</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  無料プラン
+                </h3>
+                <p className="text-4xl font-bold text-gray-900 mb-6">
+                  ¥0
+                  <span className="text-base font-normal text-gray-500">
+                    /月
+                  </span>
+                </p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    タイマー機能
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    カテゴリ3つまで
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    基本統計表示
+                  </li>
+                </ul>
+                <Link href="/sign-up" className="block">
+                  <button className="btn-secondary w-full">無料で始める</button>
+                </Link>
+              </div>
+
+              {/* プレミアムプラン */}
+              <div className="card card-lg border-2 border-blue-500 relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-full">
+                    おすすめ
+                  </span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  プレミアムプラン
+                </h3>
+                <p className="text-4xl font-bold text-gray-900 mb-6">
+                  ¥500
+                  <span className="text-base font-normal text-gray-500">
+                    /月
+                  </span>
+                </p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    無料プランの全機能
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    カテゴリ無制限
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    詳細分析・グラフ表示
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    データエクスポート
+                  </li>
+                </ul>
+                <Link href="/sign-up" className="block">
+                  <button className="btn-primary w-full">
+                    プレミアムで始める
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* フッター */}
-        <footer className="mt-16 pt-8 border-t border-gray-200 text-center">
-          <p className="text-sm text-gray-500">
-            デザインシステムプレビュー - フェーズ1.1完了
-          </p>
-        </footer>
+        {/* CTAセクション */}
+        <section className="py-20">
+          <div className="container-main text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              今すぐ作業時間の記録を始めましょう
+            </h2>
+            <p className="text-gray-600 mb-8">
+              無料プランで今日から使い始められます
+            </p>
+            <Link href="/sign-up">
+              <button className="btn-primary btn-lg">無料で始める</button>
+            </Link>
+          </div>
+        </section>
       </main>
+
+      {/* フッター */}
+      <footer className="py-8 border-t border-gray-200">
+        <div className="container-main text-center text-sm text-gray-500">
+          <p>&copy; 2026 Project Tracker. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
