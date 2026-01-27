@@ -35,7 +35,8 @@
   - [x] /sign-in ページ
   - [x] /sign-up ページ
 - [x] ユーザーメニューコンポーネントの作成
-- [ ] 認証状態の動作確認
+- [x] 認証状態の動作確認
+- [x] Clerkサインイン時のSupabaseユーザー自動登録
  
 ## フェーズ2: 基本機能の実装
  
@@ -60,18 +61,17 @@
   - [x] 今月の作業時間
  
 ### 2.3 カテゴリ管理機能
-- [ ] カテゴリ一覧ページ（/categories）
-- [ ] カテゴリ作成フォーム
-  - [ ] カテゴリ名入力
-  - [ ] 色選択
-  - [ ] バリデーション
-- [ ] カテゴリ編集機能
-- [ ] カテゴリ削除機能（確認ダイアログ付き）
-- [ ] カテゴリAPI Routes作成
-  - [ ] GET /api/categories
-  - [ ] POST /api/categories
-  - [ ] PUT /api/categories/[id]
-  - [ ] DELETE /api/categories/[id]
+- [x] カテゴリ一覧ページ（/dashboard/categories）
+- [x] カテゴリ作成フォーム
+  - [x] カテゴリ名入力
+  - [x] バリデーション
+- [x] カテゴリ編集機能
+- [x] カテゴリ削除機能（確認ダイアログ付き）
+- [x] カテゴリAPI Routes作成
+  - [x] GET /api/categories
+  - [x] POST /api/categories
+  - [x] PATCH /api/categories/[id]
+  - [x] DELETE /api/categories/[id]
  
 ## フェーズ3: 作業時間記録機能
  

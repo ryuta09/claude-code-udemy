@@ -1,5 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { ensureUserExists } from "@/lib/user";
 
 // 時間を表示用にフォーマット（秒 → "Xh Ym" 形式）
 function formatDuration(seconds: number): string {
@@ -17,6 +18,13 @@ export default async function DashboardPage() {
 
   if (!userId) {
     redirect("/sign-in");
+  }
+
+  // Clerkユーザー情報を取得してSupabaseに登録
+  const user = await currentUser();
+  if (user) {
+    const email = user.emailAddresses[0]?.emailAddress || "";
+    await ensureUserExists({ userId, email });
   }
 
   // TODO: 実際のデータをSupabaseから取得
