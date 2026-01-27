@@ -31,34 +31,36 @@ export function Header() {
             </span>
           </Link>
 
-          {/* ナビゲーション */}
-          <nav className="hidden md:flex items-center gap-6">
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                ダッシュボード
-              </Link>
-            </SignedIn>
-            <SignedOut>
-              <Link
-                href="#features"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                機能
-              </Link>
-              <Link
-                href="#pricing"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                料金
-              </Link>
-            </SignedOut>
-          </nav>
+          <div className="flex  gap-4 md:gap-6">
+            {/* ナビゲーション */}
+            <nav className="hidden md:flex items-center gap-6">
+              <SignedIn>
+                <Link
+                  href="/dashboard"
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  ダッシュボード
+                </Link>
+              </SignedIn>
+              <SignedOut>
+                <Link
+                  href="#features"
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  機能
+                </Link>
+                <Link
+                  href="#pricing"
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  料金
+                </Link>
+              </SignedOut>
+            </nav>
 
-          {/* ユーザーメニュー */}
-          <UserMenu />
+            {/* ユーザーメニュー */}
+            <UserMenu />
+          </div>
         </div>
       </div>
     </header>
