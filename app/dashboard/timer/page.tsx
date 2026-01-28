@@ -14,23 +14,39 @@ function formatTime(seconds: number): string {
   return [hours, minutes, secs].map((v) => v.toString().padStart(2, "0")).join(":");
 }
 
+// 今日の日付をYYYY-MM-DD形式で取得
+function getTodayString(): string {
+  const today = new Date();
+  return today.toISOString().split("T")[0];
+}
+
 export default function TimerPage() {
   // タイマー状態
   const [timerState, setTimerState] = useState<TimerState>("idle");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [timerMemo, setTimerMemo] = useState("");
+
+  // 手動入力用
+  const [manualDate, setManualDate] = useState(getTodayString());
+  const [manualHours, setManualHours] = useState("");
+  const [manualMinutes, setManualMinutes] = useState("");
+  const [manualMemo, setManualMemo] = useState("");
 
   // カテゴリ関連
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [timerCategoryId, setTimerCategoryId] = useState<string>("");
+  const [manualCategoryId, setManualCategoryId] = useState<string>("");
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
-  // メモ
-  const [memo, setMemo] = useState("");
-
   // 保存状態
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{
+  const [isTimerSaving, setIsTimerSaving] = useState(false);
+  const [isManualSaving, setIsManualSaving] = useState(false);
+  const [timerMessage, setTimerMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [manualMessage, setManualMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -47,7 +63,8 @@ export default function TimerPage() {
         const data = await response.json();
         setCategories(data);
         if (data.length > 0) {
-          setSelectedCategoryId(data[0].id);
+          setTimerCategoryId(data[0].id);
+          setManualCategoryId(data[0].id);
         }
       } catch (err) {
         console.error("Failed to fetch categories:", err);
@@ -77,8 +94,8 @@ export default function TimerPage() {
 
   // タイマー開始
   const handleStart = useCallback(() => {
-    if (!selectedCategoryId) {
-      setSaveMessage({
+    if (!timerCategoryId) {
+      setTimerMessage({
         type: "error",
         text: "カテゴリを選択してください",
       });
@@ -87,8 +104,8 @@ export default function TimerPage() {
 
     setTimerState("running");
     setStartTime(new Date());
-    setSaveMessage(null);
-  }, [selectedCategoryId]);
+    setTimerMessage(null);
+  }, [timerCategoryId]);
 
   // 一時停止
   const handlePause = useCallback(() => {
@@ -105,38 +122,38 @@ export default function TimerPage() {
     setTimerState("idle");
     setElapsedTime(0);
     setStartTime(null);
-    setMemo("");
+    setTimerMemo("");
   }, []);
 
-  // 作業記録を保存
-  const handleSave = useCallback(async () => {
+  // タイマー記録を保存
+  const handleSaveTimer = useCallback(async () => {
     if (elapsedTime === 0) {
-      setSaveMessage({
+      setTimerMessage({
         type: "error",
         text: "記録する時間がありません",
       });
       return;
     }
 
-    if (!selectedCategoryId) {
-      setSaveMessage({
+    if (!timerCategoryId) {
+      setTimerMessage({
         type: "error",
         text: "カテゴリを選択してください",
       });
       return;
     }
 
-    setIsSaving(true);
-    setSaveMessage(null);
+    setIsTimerSaving(true);
+    setTimerMessage(null);
 
     try {
       const response = await fetch("/api/time-entries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          category_id: selectedCategoryId,
+          category_id: timerCategoryId,
           duration: elapsedTime,
-          memo: memo || null,
+          memo: timerMemo || null,
           started_at: startTime?.toISOString() || null,
         }),
       });
@@ -145,162 +162,484 @@ export default function TimerPage() {
         throw new Error("Failed to save time entry");
       }
 
-      setSaveMessage({
+      setTimerMessage({
         type: "success",
         text: "作業記録を保存しました",
       });
 
-      // リセット
       handleStop();
     } catch (err) {
       console.error("Failed to save time entry:", err);
-      setSaveMessage({
+      setTimerMessage({
         type: "error",
-        text: "保存に失敗しました。もう一度お試しください。",
+        text: "保存に失敗しました",
       });
     } finally {
-      setIsSaving(false);
+      setIsTimerSaving(false);
     }
-  }, [elapsedTime, selectedCategoryId, memo, startTime, handleStop]);
+  }, [elapsedTime, timerCategoryId, timerMemo, startTime, handleStop]);
+
+  // 手動入力を保存
+  const handleSaveManual = useCallback(async () => {
+    const hours = parseInt(manualHours) || 0;
+    const minutes = parseInt(manualMinutes) || 0;
+    const totalSeconds = hours * 3600 + minutes * 60;
+
+    if (totalSeconds === 0) {
+      setManualMessage({
+        type: "error",
+        text: "作業時間を入力してください",
+      });
+      return;
+    }
+
+    if (!manualCategoryId) {
+      setManualMessage({
+        type: "error",
+        text: "カテゴリを選択してください",
+      });
+      return;
+    }
+
+    if (!manualDate) {
+      setManualMessage({
+        type: "error",
+        text: "日付を選択してください",
+      });
+      return;
+    }
+
+    setIsManualSaving(true);
+    setManualMessage(null);
+
+    try {
+      const startedAt = new Date(manualDate);
+      startedAt.setHours(9, 0, 0, 0);
+
+      const response = await fetch("/api/time-entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category_id: manualCategoryId,
+          duration: totalSeconds,
+          memo: manualMemo || null,
+          started_at: startedAt.toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save time entry");
+      }
+
+      setManualMessage({
+        type: "success",
+        text: "作業記録を保存しました",
+      });
+
+      setManualHours("");
+      setManualMinutes("");
+      setManualMemo("");
+      setManualDate(getTodayString());
+    } catch (err) {
+      console.error("Failed to save time entry:", err);
+      setManualMessage({
+        type: "error",
+        text: "保存に失敗しました",
+      });
+    } finally {
+      setIsManualSaving(false);
+    }
+  }, [manualHours, manualMinutes, manualDate, manualCategoryId, manualMemo]);
 
   // 選択中のカテゴリ名を取得
-  const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+  const timerCategory = categories.find((c) => c.id === timerCategoryId);
 
   return (
     <div className="space-y-8">
       {/* ページヘッダー */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">タイマー</h1>
-        <p className="text-gray-600">作業時間を計測できます</p>
+        <h1 className="text-2xl font-bold text-gray-900">時間記録</h1>
+        <p className="text-gray-600">タイマーまたは手動で作業時間を記録できます</p>
       </div>
 
-      {/* メッセージ表示 */}
-      {saveMessage && (
-        <div
-          className={`px-4 py-3 rounded-lg ${
-            saveMessage.type === "success"
-              ? "bg-green-50 border border-green-200 text-green-700"
-              : "bg-red-50 border border-red-200 text-red-700"
-          }`}
-        >
-          {saveMessage.text}
-          <button
-            onClick={() => setSaveMessage(null)}
-            className="float-right hover:opacity-70"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {/* タイマーカード */}
-      <div className="card">
-        {/* カテゴリ選択 */}
-        <div className="mb-6">
-          <label className="label">カテゴリ</label>
-          {isLoadingCategories ? (
-            <div className="h-12 bg-gray-100 rounded-lg animate-pulse" />
-          ) : categories.length === 0 ? (
-            <div className="text-gray-500 text-sm">
-              カテゴリがありません。
-              <a href="/dashboard/categories" className="text-blue-600 hover:underline">
-                カテゴリを作成
-              </a>
-              してください。
-            </div>
-          ) : (
-            <select
-              value={selectedCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="input"
-              disabled={timerState !== "idle"}
+      {/* 2カラムレイアウト */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 左側: タイマー */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg
+              className="w-5 h-5 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            タイマー
+          </h2>
 
-        {/* タイマー表示 */}
-        <div className="text-center py-8">
-          {/* 経過時間 */}
-          <div className="text-6xl md:text-8xl font-mono font-bold text-gray-900 mb-2">
-            {formatTime(elapsedTime)}
+          {/* タイマーメッセージ */}
+          {timerMessage && (
+            <div
+              className={`px-4 py-3 rounded-lg text-sm ${
+                timerMessage.type === "success"
+                  ? "bg-green-50 border border-green-200 text-green-700"
+                  : "bg-red-50 border border-red-200 text-red-700"
+              }`}
+            >
+              {timerMessage.text}
+              <button
+                onClick={() => setTimerMessage(null)}
+                className="float-right hover:opacity-70"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          <div className="card">
+            {/* カテゴリ選択 */}
+            <div className="mb-4">
+              <label className="label">カテゴリ</label>
+              {isLoadingCategories ? (
+                <div className="h-12 bg-gray-100 rounded-lg animate-pulse" />
+              ) : categories.length === 0 ? (
+                <div className="text-gray-500 text-sm">
+                  カテゴリがありません。
+                  <a href="/dashboard/categories" className="text-blue-600 hover:underline">
+                    カテゴリを作成
+                  </a>
+                  してください。
+                </div>
+              ) : (
+                <select
+                  value={timerCategoryId}
+                  onChange={(e) => setTimerCategoryId(e.target.value)}
+                  className="input"
+                  disabled={timerState !== "idle"}
+                >
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* タイマー表示 */}
+            <div className="text-center py-6">
+              <div className="text-5xl md:text-6xl font-mono font-bold text-gray-900 mb-2">
+                {formatTime(elapsedTime)}
+              </div>
+
+              {timerState !== "idle" && timerCategory && (
+                <div className="text-gray-500 text-sm">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                    {timerCategory.name}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* コントロールボタン */}
+            <div className="flex justify-center gap-3 flex-wrap">
+              {timerState === "idle" && (
+                <button
+                  onClick={handleStart}
+                  disabled={!timerCategoryId || categories.length === 0}
+                  className="btn-primary flex items-center gap-2"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  スタート
+                </button>
+              )}
+
+              {timerState === "running" && (
+                <>
+                  <button
+                    onClick={handlePause}
+                    className="btn-secondary flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    一時停止
+                  </button>
+                  <button
+                    onClick={handleSaveTimer}
+                    disabled={isTimerSaving}
+                    className="btn-primary flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {isTimerSaving ? "保存中..." : "保存"}
+                  </button>
+                </>
+              )}
+
+              {timerState === "paused" && (
+                <>
+                  <button
+                    onClick={handleResume}
+                    className="btn-primary flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    再開
+                  </button>
+                  <button
+                    onClick={handleSaveTimer}
+                    disabled={isTimerSaving}
+                    className="btn-primary flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {isTimerSaving ? "保存中..." : "保存"}
+                  </button>
+                  <button
+                    onClick={handleStop}
+                    className="btn-danger flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    破棄
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* メモ入力（タイマー動作中のみ表示） */}
+            {timerState !== "idle" && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <label className="label">メモ（オプション）</label>
+                <textarea
+                  value={timerMemo}
+                  onChange={(e) => setTimerMemo(e.target.value)}
+                  placeholder="作業内容をメモ..."
+                  className="input h-20 resize-none text-sm"
+                  rows={2}
+                />
+              </div>
+            )}
           </div>
 
-          {/* 現在のカテゴリ */}
-          {timerState !== "idle" && selectedCategory && (
-            <div className="text-gray-500">
-              <span className="inline-flex items-center gap-2">
-                <span className="w-3 h-3 bg-blue-500 rounded-full" />
-                {selectedCategory.name}
-              </span>
+          <p className="text-sm text-gray-500 text-center">
+            タイマーを開始して作業時間を記録しましょう
+          </p>
+        </div>
+
+        {/* 右側: 手動入力 */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg
+              className="w-5 h-5 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            手動入力
+          </h2>
+
+          {/* 手動入力メッセージ */}
+          {manualMessage && (
+            <div
+              className={`px-4 py-3 rounded-lg text-sm ${
+                manualMessage.type === "success"
+                  ? "bg-green-50 border border-green-200 text-green-700"
+                  : "bg-red-50 border border-red-200 text-red-700"
+              }`}
+            >
+              {manualMessage.text}
+              <button
+                onClick={() => setManualMessage(null)}
+                className="float-right hover:opacity-70"
+              >
+                ✕
+              </button>
             </div>
           )}
-        </div>
 
-        {/* コントロールボタン */}
-        <div className="flex justify-center gap-4">
-          {timerState === "idle" && (
-            <button
-              onClick={handleStart}
-              disabled={!selectedCategoryId || categories.length === 0}
-              className="btn-primary btn-lg flex items-center gap-2"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+          <div className="card">
+            <div className="space-y-4">
+              {/* 日付選択 */}
+              <div>
+                <label className="label">日付</label>
+                <input
+                  type="date"
+                  value={manualDate}
+                  onChange={(e) => setManualDate(e.target.value)}
+                  max={getTodayString()}
+                  className="input"
                 />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              スタート
-            </button>
-          )}
+              </div>
 
-          {timerState === "running" && (
-            <>
-              <button
-                onClick={handlePause}
-                className="btn-secondary btn-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              {/* カテゴリ選択 */}
+              <div>
+                <label className="label">カテゴリ</label>
+                {isLoadingCategories ? (
+                  <div className="h-12 bg-gray-100 rounded-lg animate-pulse" />
+                ) : categories.length === 0 ? (
+                  <div className="text-gray-500 text-sm">
+                    カテゴリがありません。
+                    <a href="/dashboard/categories" className="text-blue-600 hover:underline">
+                      カテゴリを作成
+                    </a>
+                    してください。
+                  </div>
+                ) : (
+                  <select
+                    value={manualCategoryId}
+                    onChange={(e) => setManualCategoryId(e.target.value)}
+                    className="input"
+                  >
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* 作業時間入力 */}
+              <div>
+                <label className="label">作業時間</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={manualHours}
+                    onChange={(e) => setManualHours(e.target.value)}
+                    placeholder="0"
+                    min="0"
+                    max="23"
+                    className="input w-20 text-center"
                   />
-                </svg>
-                一時停止
-              </button>
+                  <span className="text-gray-600">時間</span>
+                  <input
+                    type="number"
+                    value={manualMinutes}
+                    onChange={(e) => setManualMinutes(e.target.value)}
+                    placeholder="0"
+                    min="0"
+                    max="59"
+                    className="input w-20 text-center"
+                  />
+                  <span className="text-gray-600">分</span>
+                </div>
+              </div>
+
+              {/* メモ入力 */}
+              <div>
+                <label className="label">メモ（オプション）</label>
+                <textarea
+                  value={manualMemo}
+                  onChange={(e) => setManualMemo(e.target.value)}
+                  placeholder="作業内容をメモ..."
+                  className="input h-20 resize-none text-sm"
+                  rows={2}
+                />
+              </div>
+
+              {/* 保存ボタン */}
               <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="btn-primary btn-lg flex items-center gap-2"
+                onClick={handleSaveManual}
+                disabled={isManualSaving || categories.length === 0}
+                className="btn-primary w-full flex items-center justify-center gap-2"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -312,100 +651,15 @@ export default function TimerPage() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                {isSaving ? "保存中..." : "保存"}
+                {isManualSaving ? "保存中..." : "作業記録を保存"}
               </button>
-            </>
-          )}
+            </div>
+          </div>
 
-          {timerState === "paused" && (
-            <>
-              <button
-                onClick={handleResume}
-                className="btn-primary btn-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                再開
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="btn-primary btn-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                {isSaving ? "保存中..." : "保存"}
-              </button>
-              <button
-                onClick={handleStop}
-                className="btn-danger btn-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                破棄
-              </button>
-            </>
-          )}
+          <p className="text-sm text-gray-500 text-center">
+            過去の作業時間を手動で入力できます
+          </p>
         </div>
-      </div>
-
-      {/* メモ入力 */}
-      {timerState !== "idle" && (
-        <div className="card">
-          <label className="label">メモ（オプション）</label>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            placeholder="作業内容をメモ..."
-            className="input h-24 resize-none"
-            rows={3}
-          />
-        </div>
-      )}
-
-      {/* ヒント */}
-      <div className="text-sm text-gray-500 text-center">
-        <p>タイマーを開始して作業時間を記録しましょう。</p>
-        <p>一時停止して後から再開することもできます。</p>
       </div>
     </div>
   );
