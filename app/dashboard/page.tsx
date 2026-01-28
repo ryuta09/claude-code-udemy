@@ -21,10 +21,16 @@ export default async function DashboardPage() {
   }
 
   // Clerkユーザー情報を取得してSupabaseに登録
-  const user = await currentUser();
-  if (user) {
-    const email = user.emailAddresses[0]?.emailAddress || "";
-    await ensureUserExists({ userId, email });
+  // APIエラーが発生してもページは表示されるようにする
+  try {
+    const user = await currentUser();
+    if (user) {
+      const email = user.emailAddresses[0]?.emailAddress || "";
+      await ensureUserExists({ userId, email });
+    }
+  } catch (error) {
+    // Clerk APIエラー（Bad Gateway等）が発生しても続行
+    console.error("Failed to fetch user from Clerk:", error);
   }
 
   // TODO: 実際のデータをSupabaseから取得
