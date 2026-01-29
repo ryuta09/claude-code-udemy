@@ -37,6 +37,41 @@ work_logs: id, user_id (TEXT), category_id, duration (秒), memo, started_at, cr
 
 - `user_id`はClerkのユーザーID（UUID形式ではなくTEXT型）
 - RLSポリシーで`get_clerk_user_id()`関数を使用
+- 型定義: `types/database.ts`（`npx supabase gen types typescript`で生成可能）
+
+## API Routes
+
+すべてのAPI Routesは`app/api/`に配置。共通パターン：
+
+```typescript
+import { auth } from "@clerk/nextjs/server";
+import { createAuthenticatedClient } from "@/lib/supabase";
+
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const supabase = createAuthenticatedClient(userId);
+  // RLSが自動的にユーザーのデータのみ返す
+}
+```
+
+現在のエンドポイント:
+- `/api/categories` - GET/POST
+- `/api/categories/[id]` - PATCH/DELETE
+- `/api/time-entries` - GET/POST
+- `/api/time-entries/[id]` - PUT/DELETE
+- `/api/export` - GET (CSVエクスポート)
+
+## Page Structure
+
+- `app/page.tsx` - ランディングページ（Server Component）
+- `app/dashboard/` - 認証必須エリア（すべてClient Component）
+  - `page.tsx` - 統計表示
+  - `timer/page.tsx` - タイマー・手動入力
+  - `categories/page.tsx` - カテゴリ管理
+  - `history/page.tsx` - 作業履歴
+  - `export/page.tsx` - データエクスポート
 
 ## Key Conventions
 
