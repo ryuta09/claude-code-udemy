@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ensureUserExists } from "@/lib/user";
 import { createAuthenticatedClient } from "@/lib/supabase";
 import { WorkLogWithCategory } from "@/types/database";
+import { PremiumAnalyticsSection } from "@/components/dashboard/PremiumAnalyticsSection";
 
 // 時間を表示用にフォーマット（秒 → "Xh Ym" 形式）
 function formatDuration(seconds: number): string {
@@ -258,6 +259,9 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* プレミアム分析セクション */}
+      <PremiumAnalyticsSection weekTotal={stats.week} monthTotal={stats.month} />
 
       {/* クイックアクション */}
       <div className="card">

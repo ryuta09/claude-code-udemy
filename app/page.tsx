@@ -134,7 +134,7 @@ export default function Home() {
                   無料プラン
                 </h3>
                 <p className="text-4xl font-bold text-gray-900 mb-6">
-                  ¥0
+                  $0
                   <span className="text-base font-normal text-gray-500">
                     /月
                   </span>
@@ -170,7 +170,7 @@ export default function Home() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    カテゴリ3つまで
+                    カテゴリ管理（無制限）
                   </li>
                   <li className="flex items-center gap-2 text-gray-600">
                     <svg
@@ -186,7 +186,23 @@ export default function Home() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    基本統計表示
+                    週次・月次の合計時間表示
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    CSVエクスポート
                   </li>
                 </ul>
                 <Link href="/sign-up" className="block">
@@ -205,7 +221,7 @@ export default function Home() {
                   プレミアムプラン
                 </h3>
                 <p className="text-4xl font-bold text-gray-900 mb-6">
-                  ¥500
+                  $10
                   <span className="text-base font-normal text-gray-500">
                     /月
                   </span>
@@ -241,7 +257,7 @@ export default function Home() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    カテゴリ無制限
+                    日次・週次・月次の期間切り替え
                   </li>
                   <li className="flex items-center gap-2 text-gray-600">
                     <svg
@@ -257,7 +273,7 @@ export default function Home() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    詳細分析・グラフ表示
+                    過去データとの比較
                   </li>
                   <li className="flex items-center gap-2 text-gray-600">
                     <svg
@@ -273,12 +289,12 @@ export default function Home() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    データエクスポート
+                    カテゴリ別グラフ・トレンド分析
                   </li>
                 </ul>
-                <Link href="/sign-up" className="block">
+                <Link href="/pricing" className="block">
                   <button className="btn-primary w-full">
-                    プレミアムで始める
+                    プランを詳しく見る
                   </button>
                 </Link>
               </div>
