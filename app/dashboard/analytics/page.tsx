@@ -10,6 +10,8 @@ import {
   CategoryPieChart,
   DailyBarChart,
   ActivityHeatmap,
+  ProductivityInsights,
+  CategoryTrendChart,
 } from "@/components/analytics";
 import { PlanProtect } from "@/components/access-control";
 
@@ -39,6 +41,27 @@ interface AnalyticsData {
 interface HeatmapData {
   date: string;
   duration: number;
+}
+
+interface ProductivityData {
+  averageSessionDuration: number;
+  averageSessionsPerDay: number;
+  longestSession: number;
+  totalSessions: number;
+  hourlyBreakdown: Array<{
+    hour: number;
+    duration: number;
+    sessionCount: number;
+  }>;
+  peakHour: { hour: number; duration: number } | null;
+  categoryTrends: Array<{
+    categoryId: string;
+    categoryName: string;
+    data: Array<{
+      date: string;
+      duration: number;
+    }>;
+  }>;
 }
 
 // 時間をフォーマット
@@ -163,8 +186,10 @@ function AnalyticsContent() {
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [heatmapData, setHeatmapData] = useState<HeatmapData[]>([]);
+  const [productivityData, setProductivityData] = useState<ProductivityData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isHeatmapLoading, setIsHeatmapLoading] = useState(true);
+  const [isProductivityLoading, setIsProductivityLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAnalytics = useCallback(async () => {
@@ -211,6 +236,29 @@ function AnalyticsContent() {
     }
   }, []);
 
+  // 生産性指標用のデータを取得
+  const fetchProductivityData = useCallback(async () => {
+    setIsProductivityLoading(true);
+
+    try {
+      const response = await fetch(
+        `/api/analytics/productivity?period=${periodType}&offset=${offset}`
+      );
+
+      if (!response.ok) {
+        throw new Error("生産性データの取得に失敗しました");
+      }
+
+      const result = await response.json();
+      setProductivityData(result.data);
+    } catch (err) {
+      console.error("Productivity fetch error:", err);
+      // 生産性データのエラーは致命的ではないのでエラー表示しない
+    } finally {
+      setIsProductivityLoading(false);
+    }
+  }, [periodType, offset]);
+
   useEffect(() => {
     fetchAnalytics();
   }, [fetchAnalytics]);
@@ -218,6 +266,10 @@ function AnalyticsContent() {
   useEffect(() => {
     fetchHeatmapData();
   }, [fetchHeatmapData]);
+
+  useEffect(() => {
+    fetchProductivityData();
+  }, [fetchProductivityData]);
 
   // 期間タイプが変わったらオフセットをリセット
   const handlePeriodTypeChange = (newPeriod: PeriodType) => {
@@ -293,6 +345,24 @@ function AnalyticsContent() {
           isLoading={isLoading}
         />
       </div>
+
+      {/* 生産性指標 */}
+      <ProductivityInsights
+        averageSessionDuration={productivityData?.averageSessionDuration || 0}
+        averageSessionsPerDay={productivityData?.averageSessionsPerDay || 0}
+        longestSession={productivityData?.longestSession || 0}
+        totalSessions={productivityData?.totalSessions || 0}
+        peakHour={productivityData?.peakHour || null}
+        hourlyBreakdown={productivityData?.hourlyBreakdown || []}
+        isLoading={isProductivityLoading}
+      />
+
+      {/* カテゴリ別推移 */}
+      <CategoryTrendChart
+        data={productivityData?.categoryTrends || []}
+        periodType={periodType}
+        isLoading={isProductivityLoading}
+      />
 
       {/* ダッシュボードへのリンク */}
       <div className="text-center pt-4">
